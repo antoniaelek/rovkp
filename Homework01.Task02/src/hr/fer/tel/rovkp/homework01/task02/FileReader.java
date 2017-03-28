@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * @author aelek
  */
 public class FileReader {
-    public static int mergeFiles(String from, Charset charset, String to, StandardOpenOption openOption) throws IOException{
+    public static int mergeFiles(String from, String to, Charset charset, StandardOpenOption openOption) throws IOException{
         Path newFile = Paths.get(to);
         List<String> lines = readFiles(from, charset);
         Files.write(newFile, lines, charset, openOption);
@@ -47,5 +47,19 @@ public class FileReader {
         });
         
         return lines;
+    }
+    
+    public static void work(String from, String to, Charset charset) throws IOException{
+        Path rootDir = Paths.get(from);
+        Path newFile = Paths.get(to);
+
+        Files.walkFileTree(rootDir, new SimpleFileVisitor<Path>(){
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.write(newFile,Files.readAllLines(file,charset),StandardOpenOption.APPEND);
+                System.gc();
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 }

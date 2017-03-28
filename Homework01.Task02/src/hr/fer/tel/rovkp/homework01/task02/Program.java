@@ -31,15 +31,15 @@ public class Program {
             String to = args[1]; // ./gutenberg/gutenberg_books.txt
             int count = 0;
             
-            // Because heap, that's bloody why
-            File file = new File(from);
+//            count += FileReader.mergeFiles(from, to, 
+//                    StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE);
+            
             File[] directories = new File(from).listFiles(File::isDirectory);
             for(File dir : directories) {
-                count += FileReader.mergeFiles(dir.getPath(), 
-                                               StandardCharsets.ISO_8859_1, 
-                                               to, 
-                                               StandardOpenOption.CREATE
-                                               );
+                count += FileReader.mergeFiles(dir.getPath(), to, 
+                                               StandardCharsets.ISO_8859_1,
+                                               StandardOpenOption.APPEND
+                                              );
             }
             
             System.out.println("Total: " + count + " lines.");
