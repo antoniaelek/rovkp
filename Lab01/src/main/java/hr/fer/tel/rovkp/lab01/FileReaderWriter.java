@@ -1,27 +1,32 @@
 package hr.fer.tel.rovkp.lab01;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocalFileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 
 /**
  *
  * @author aelek
  */
 public class FileReaderWriter {
-    private final int[] linesCount;
-    private final int[] filesCount;
+    private int linesCount;
+    private int filesCount;
     
     public FileReaderWriter(){
-        linesCount = new int[1];
-        filesCount = new int[1];
-        linesCount[0] = filesCount[0] = 0;
+        linesCount = filesCount = 0;
     }
     
     /**
@@ -29,43 +34,83 @@ public class FileReaderWriter {
      * @return Total lines read.
      */
     public int readLinesCount(){
-        return linesCount[0];
+        return linesCount;
     }
     
     public int readFilesCount(){
-        return filesCount[0];
+        return filesCount;
     }
 
     /**
      * Read all files from input folder and write contents to a single output file.
      * @param from input folder.
-     * @param to output file.
+     * @param hdfsTo
      * @throws IOException
+     * @throws java.net.URISyntaxException
      */
-    public void work(String from, String to) throws IOException {
-        work(from, to, Charset.defaultCharset());
+    public void work(String from, String hdfsTo) throws IOException, URISyntaxException, Exception {
+        work(from, hdfsTo, Charset.defaultCharset());
     }
         
     /**
      * Read all files from input folder and write contents to a single output file.
      * @param from input folder.
-     * @param to output file.
-     * @param charset charset of input files.
+     * @param hdfsTo
+     * @param charset character set of input files.
      * @throws IOException
+     * @throws java.net.URISyntaxException
      */
-    public void work(String from, String to, Charset charset) throws IOException{
-        Path rootDir = Paths.get(from);
-        Path newFile = Paths.get(to);
-
-        Files.walkFileTree(rootDir, new SimpleFileVisitor<Path>(){
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                List<String> lines = Files.readAllLines(file,charset);
-                //Files.write(newFile,lines,StandardOpenOption.APPEND);
-                linesCount[0] += lines.size();
-                filesCount[0] += 1;
-                return FileVisitResult.CONTINUE;
+    public void work(String from, String hdfsTo, Charset charset) throws IOException, URISyntaxException, Exception {
+        // HDFS initialization
+        Configuration config = new Configuration();
+        FileSystem hdfs = FileSystem.get(new URI(from), config);
+        LocalFileSystem localFs = LocalFileSystem.getLocal(config);        
+        
+        // Reset counters
+        linesCount = filesCount = 0;
+        
+        // Paths
+        Path pathFrom = new org.apache.hadoop.fs.Path(from);
+        Path pathTo = new org.apache.hadoop.fs.Path(hdfsTo);
+        if (hdfs.exists(pathTo)) {
+            System.out.println("File " + pathTo + " already exists, deleting it.");
+            hdfs.delete(pathTo, true); 
+        }
+        OutputStream os = hdfs.create(pathTo);
+        System.out.println("Reading...");
+        
+        // Reading from a file, directory, or unknown
+        if (localFs.isFile(pathFrom)) {
+            try (BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(os) )) {
+                processFile(localFs, pathFrom, writer);
             }
-        });
+        }
+        else if (localFs.isDirectory(pathFrom)) {
+            try (BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(os) )) {        
+                RemoteIterator<LocatedFileStatus> it = localFs.listFiles(pathFrom, true);
+                while(it.hasNext()) {
+                    LocatedFileStatus fileStatus = it.next();
+                    processFile(localFs, fileStatus.getPath(), writer);
+                }
+            }
+        }
+        else {
+            if (hdfs.exists(pathTo)) 
+                hdfs.delete(pathTo, true); 
+            throw new Exception(from + " is not path to a valid file or directory.");
+        }
+        
+    }
+    
+    private void processFile(FileSystem fileSystem, Path path, Writer writer) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(fileSystem.open(path)));
+        filesCount += 1;
+
+        String line = br.readLine();
+        while (line != null){
+            linesCount += 1;
+            writer.write(line + System.lineSeparator());
+            line = br.readLine();
+        }
     }
 }

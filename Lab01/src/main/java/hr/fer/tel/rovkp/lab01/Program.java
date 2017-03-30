@@ -5,62 +5,64 @@
  */
 package hr.fer.tel.rovkp.lab01;
 
+import com.google.common.base.Stopwatch;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author aelek
  */
 public class Program {
-    public static void main(String[] args) {       
+    
+    public static void main(String[] args) {
         if (args.length < 2) {
-            System.err.println("Usage: Program <from> <to>");
+            System.err.println("Usage: Program [zad2 <local-from> <hdfs-to>]|[zad3 <out-file>]");
             System.exit(1);
         }
         
-        FileReaderWriter frw = new FileReaderWriter();
-        try {
-            frw.work(args[0], args[1], StandardCharsets.ISO_8859_1);
-        } catch (IOException ex) {
-            System.err.println(ex);
+        if (args[1].toLowerCase().equals("zad2")){
+            if (args.length < 3) {
+                System.err.println("Usage: Program zad2 <local-from> <hdfs-to>");
+                System.exit(1);
+            }
+            zad2(args[1], args[2]);
         }
-        System.out.println("Read " + frw.readLinesCount() + " lines from  " + frw.readFilesCount() + " files.");
+        else if (args[1].toLowerCase().equals("zad3")) {
+            try {   
+                zad3(args[1]);
+            } catch (IOException | URISyntaxException ex) {
+                System.err.println(ex);
+            }
+        } else {
+            System.err.println("Usage: Program [zad2 <local-from> <hdfs-to>]|[zad3 <out-file>]");
+            System.exit(1);
+        }
     }
     
-    public static List<String> readFiles(String path, String hdfsURI, Charset charset) throws IOException, URISyntaxException{
-        Configuration config = new Configuration();
-        FileSystem hdfs = FileSystem.get(new URI(hdfsURI), config);
-        
-        Path rootDir = Paths.get(path);
-        List<String> lines = new ArrayList<>();
-        
-        Files.walkFileTree(rootDir, new SimpleFileVisitor<Path>(){
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+    public static void zad3(String path) throws IOException, URISyntaxException{
+        Serializator.serialize(path);
+        Serializator.avg(path);
+    }
+    
+    public static void zad2(String from, String to){
+        Stopwatch timer = new Stopwatch().start();
 
-                try (Stream<String> stream = Files.lines(file, charset)) {
-                    stream.forEach(line -> lines.add(line));
-                }
-
-                return FileVisitResult.CONTINUE;
-            }
-        });
+        FileReaderWriter frw = new FileReaderWriter();
+        try {
+            frw.work(from, to, StandardCharsets.ISO_8859_1);
+        } catch (URISyntaxException | IOException ex) {
+            System.err.println(ex);
+        } catch (Exception ex) {
+            System.err.println(ex);
+        }
         
-        return lines;
+        timer.stop();
+        System.out.println("Read " + frw.readLinesCount() + " lines from " + frw.readFilesCount() + " files.");
+        System.out.println("Program finished in " + timer.elapsedTime(TimeUnit.SECONDS) + " seconds.");
     }
 }
