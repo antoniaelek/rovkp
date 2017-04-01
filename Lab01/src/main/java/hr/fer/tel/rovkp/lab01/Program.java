@@ -20,7 +20,7 @@ public class Program {
     public static void main(String[] args) {
         if (args.length < 2) {
             System.err.println("Usage: Program [zad2 <local-from> <hdfs-to>]|[zad3 <out-file>]");
-            System.exit(1);
+            return;
         }
         
         if (args[1].equalsIgnoreCase("zad2")){
