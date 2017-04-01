@@ -26,7 +26,7 @@ public class Program {
         if (args[1].equalsIgnoreCase("zad2")){
             if (args.length < 3) {
                 System.err.println("Usage: Program zad2 <local-from> <hdfs-to>");
-                System.exit(1);
+                return;
             }
             zad2(args[1], args[2]);
         }
@@ -38,7 +38,7 @@ public class Program {
             }
         } else {
             System.err.println("Usage: Program [zad2 <local-from> <hdfs-to>]|[zad3 <out-file>]");
-            System.exit(1);
+            return;
         }
     }
     
