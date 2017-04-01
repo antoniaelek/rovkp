@@ -19,7 +19,7 @@ import org.apache.hadoop.fs.LocalFileSystem;
  */
 public class Program {
     
-    public static String Work(String hdfsURI, String hdfsPath, String localPath) 
+    public static String work(String hdfsURI, String hdfsPath, String localPath) 
             throws URISyntaxException, IOException{
         
         Configuration config = new Configuration();
@@ -35,26 +35,25 @@ public class Program {
                           || hdfs.isDirectory(pathHdfs);
 
         return new StringBuilder().append(localPath)
-                                  .append(isLocalFile == true ? " is not" : " is")
+                                  .append(isLocalFile ? " is not" : " is")
                                   .append(" a valid local path.\n")
                                   .append(hdfsPath)
-                                  .append(isHdfsFile == true ? " is not" : " is")
+                                  .append(isHdfsFile ? " is not" : " is")
                                   .append(" a valid hdfs path.").toString();        
     }
     
     public static void main(String[] args) {
         if (args.length < 3) {
             System.err.println("Usage: Program <hdfsURI> <hdfsPath> <localPath>");
-            System.exit(1);
+            return;
         }
 
         String hdfsURI = args[0]; // hdfs://localhost:9000
         String hdfsPath = args[1]; // ~/user/rovkp/gutenberg.zip
         String localPath = args[2]; // /usr/rovkp/gutenberg.zip
-        int count = 0;
         
         try {
-            System.out.println(Work(hdfsURI, hdfsPath, localPath));
+            System.out.println(work(hdfsURI, hdfsPath, localPath));
         } catch (IOException | URISyntaxException ex) {
             System.err.println(ex);
         }

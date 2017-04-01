@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,14 +23,14 @@ public class Program {
             System.exit(1);
         }
         
-        if (args[1].toLowerCase().equals("zad2")){
+        if (args[1].equalsIgnoreCase("zad2")){
             if (args.length < 3) {
                 System.err.println("Usage: Program zad2 <local-from> <hdfs-to>");
                 System.exit(1);
             }
             zad2(args[1], args[2]);
         }
-        else if (args[1].toLowerCase().equals("zad3")) {
+        else if (args[1].equalsIgnoreCase("zad3")) {
             try {   
                 zad3(args[1]);
             } catch (IOException | URISyntaxException ex) {

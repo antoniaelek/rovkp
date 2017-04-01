@@ -70,8 +70,8 @@ public class FileReaderWriter {
         linesCount = filesCount = 0;
         
         // Paths
-        Path pathFrom = new org.apache.hadoop.fs.Path(from);
-        Path pathTo = new org.apache.hadoop.fs.Path(hdfsTo);
+        Path pathFrom = new Path(from);
+        Path pathTo = new Path(hdfsTo);
         if (hdfs.exists(pathTo)) {
             System.out.println("File " + pathTo + " already exists, deleting it.");
             hdfs.delete(pathTo, true); 

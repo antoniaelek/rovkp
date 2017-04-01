@@ -62,7 +62,6 @@ public class Serializator {
     public static void avg(String in) throws URISyntaxException, IOException {
         Path inputFile = new Path(in);
         Configuration conf = new Configuration();
-        FileSystem hdfs = FileSystem.get(new URI(in), conf);
         
         float[] sums = new float[100];
         int[] counts = new int[100];

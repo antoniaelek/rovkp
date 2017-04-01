@@ -24,7 +24,7 @@ public class Program {
             
             if (args.length < 2) {
                 System.err.println("Usage: Program <from> <to>");
-                System.exit(1);
+                return;
             }
             
             String from = args[0]; // ./gutenberg
