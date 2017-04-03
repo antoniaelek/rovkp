@@ -12,30 +12,10 @@ package hr.fer.tel.rovkp.homework02.task02;
 import java.text.ParseException;
 
 public class DebsRecordParser {
-
-    private int passengerCount;
-    private double pickupLongitude;
-    private double pickupLatitude;
-    private double dropoffLongitude;
-    private double dropoffLatitude;
     
     private String location;
-
-    public String getLocation() {
-        return location;
-    }
-    
     private int passengerCategory;
-
-    public int getPassengerCategory() {
-        return passengerCategory;
-    }
-    
     private String input;
-    
-    public String getInput() {
-        return input;
-    }
         
     public void parse(String record) throws ParseException {
         input = record;
@@ -45,10 +25,10 @@ public class DebsRecordParser {
         }
         
         // drive start and finish coordinates
-        pickupLongitude = Double.parseDouble(splitted[10]);
-        pickupLatitude = Double.parseDouble(splitted[11]);
-        dropoffLongitude = Double.parseDouble(splitted[12]);
-        dropoffLatitude = Double.parseDouble(splitted[13]);
+        double pickupLongitude = Double.parseDouble(splitted[10]);
+        double pickupLatitude = Double.parseDouble(splitted[11]);
+        double dropoffLongitude = Double.parseDouble(splitted[12]);
+        double dropoffLatitude = Double.parseDouble(splitted[13]);
         
         // boundaries for the center
         double lowerLong = -74;
@@ -65,7 +45,7 @@ public class DebsRecordParser {
         else location = "not_center";
         
         // number of passengers category
-        passengerCount = Integer.parseInt(splitted[7]);
+        double passengerCount = Integer.parseInt(splitted[7]);
         if (passengerCount == 1)
             passengerCategory = 1;
         else if (passengerCount >= 4)
@@ -81,5 +61,16 @@ public class DebsRecordParser {
     private boolean inRange (double value, double lowerBound, double upperBound){
         return (value >= lowerBound && value <= upperBound);
     }
-
+    
+        public String getLocation() {
+        return location;
+    }
+    
+    public int getPassengerCategory() {
+        return passengerCategory;
+    }
+        
+    public String getInput() {
+        return input;
+    }
 }
