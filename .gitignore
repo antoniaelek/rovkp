@@ -17,7 +17,7 @@ nb-configuration.xml
 # Custom
 **/gutenberg/**
 **/Distance/**
-/Homework01.Task03/target/
+**/trip_data.csv
 
 # Maven
 target/
