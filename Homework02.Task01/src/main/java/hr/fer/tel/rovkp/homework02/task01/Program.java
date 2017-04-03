@@ -30,17 +30,17 @@ public class Program {
 
         Job job = Job.getInstance();
         job.setJarByClass(Program.class);
-        job.setJobName("Drives");
+        job.setJobName("TripTimes");
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-        job.setMapperClass(DrivesMapper.class);
-        job.setCombinerClass(DrivesReducer.class);
-        job.setReducerClass(DrivesReducer.class);
+        job.setMapperClass(TripTimesMapper.class);
+        job.setCombinerClass(TripTimesReducer.class);
+        job.setReducerClass(TripTimesReducer.class);
 
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(DistancesTuple.class);
+        job.setOutputValueClass(TripTimesTuple.class);
         
         job.waitForCompletion(true);
         timer.stop();

@@ -9,7 +9,7 @@ package hr.fer.tel.rovkp.homework02.task01;
  *
  * @author aelek
  */
-public class DebsTripTimeParser {
+public class DebsRecordParser {
 
     private String medallion;
     private int tripTimeInSecs;

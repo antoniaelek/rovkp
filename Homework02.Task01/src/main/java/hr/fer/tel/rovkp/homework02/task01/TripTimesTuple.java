@@ -15,21 +15,21 @@ import org.apache.hadoop.io.WritableComparable;
  *
  * @author aelek
  */
-public class DistancesTuple implements WritableComparable<DistancesTuple> {
+public class TripTimesTuple implements WritableComparable<TripTimesTuple> {
 
     private IntWritable total;
     private IntWritable min;
     private IntWritable max;
     
-    public DistancesTuple() {
+    public TripTimesTuple() {
         set();
     }
 
-    public DistancesTuple(int total, int min, int max) {
+    public TripTimesTuple(int total, int min, int max) {
         set(total, min, max);
     }
 
-    public DistancesTuple(IntWritable total, IntWritable min, IntWritable max) {
+    public TripTimesTuple(IntWritable total, IntWritable min, IntWritable max) {
         set(total, min, max);
     }
 
@@ -66,8 +66,8 @@ public class DistancesTuple implements WritableComparable<DistancesTuple> {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof DistancesTuple) {
-            DistancesTuple tp = (DistancesTuple) o;
+        if (o instanceof TripTimesTuple) {
+            TripTimesTuple tp = (TripTimesTuple) o;
             return total.equals(tp.total) && min.equals(tp.min) && max.equals(tp.max);
         }
         return false;
@@ -79,7 +79,7 @@ public class DistancesTuple implements WritableComparable<DistancesTuple> {
     }
 
     @Override
-    public int compareTo(DistancesTuple tp) {
+    public int compareTo(TripTimesTuple tp) {
         int cmp = total.compareTo(tp.total);
         if (cmp != 0) {
             return cmp;

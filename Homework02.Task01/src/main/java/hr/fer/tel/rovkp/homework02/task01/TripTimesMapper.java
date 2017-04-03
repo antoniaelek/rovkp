@@ -14,11 +14,11 @@ import org.apache.hadoop.mapreduce.Mapper;
  *
  * @author aelek
  */
-public class DrivesMapper extends Mapper<LongWritable, Text, Text, DistancesTuple> {
+public class TripTimesMapper extends Mapper<LongWritable, Text, Text, TripTimesTuple> {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        DebsTripTimeParser parser = new DebsTripTimeParser();
+        DebsRecordParser parser = new DebsRecordParser();
         
         // Skip headers
         if (key.get() == 0) return;
@@ -29,7 +29,7 @@ public class DrivesMapper extends Mapper<LongWritable, Text, Text, DistancesTupl
             parser.parse(record);
             int secs = parser.getTripTimeInSecs();
             String medallion = parser.getMedallion();
-            context.write(new Text(medallion), new DistancesTuple(secs,secs,secs));
+            context.write(new Text(medallion), new TripTimesTuple(secs,secs,secs));
         } catch (Exception ex) {
             System.err.println(ex);
         }

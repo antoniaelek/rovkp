@@ -14,23 +14,23 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author aelek
  */
-public class DrivesReducer extends Reducer<Text, DistancesTuple, Text, DistancesTuple> {
+public class TripTimesReducer extends Reducer<Text, TripTimesTuple, Text, TripTimesTuple> {
     
-    private DistancesTuple result = new DistancesTuple();
+    private TripTimesTuple result = new TripTimesTuple();
         
     @Override
-    protected void reduce(Text key, Iterable<DistancesTuple> values, Context context) throws IOException, InterruptedException {
-        Iterator<DistancesTuple> iterator = values.iterator();
+    protected void reduce(Text key, Iterable<TripTimesTuple> values, Context context) throws IOException, InterruptedException {
+        Iterator<TripTimesTuple> iterator = values.iterator();
         if (!iterator.hasNext()) return;
         
-        DistancesTuple first = iterator.next();
+        TripTimesTuple first = iterator.next();
         int total = first.getTotal();
         int min = first.getMin();
         int max = first.getMax();
         
         while (iterator.hasNext())
         {
-            DistancesTuple curr = iterator.next();
+            TripTimesTuple curr = iterator.next();
             total += curr.getTotal();
             min = curr.getMin() < min ? curr.getMin() : min;
             max = curr.getMax() > max ? curr.getMax() : max;
