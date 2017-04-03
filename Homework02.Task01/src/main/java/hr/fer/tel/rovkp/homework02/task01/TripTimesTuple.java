@@ -93,7 +93,7 @@ public class TripTimesTuple implements WritableComparable<TripTimesTuple> {
         return min.compareTo(tp.min);
     }
     
-    private void set(){
+    public void set(){
         this.total = new IntWritable();
         this.min = new IntWritable();
         this.max = new IntWritable();

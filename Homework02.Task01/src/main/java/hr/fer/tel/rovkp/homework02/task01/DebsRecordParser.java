@@ -5,6 +5,8 @@
  */
 package hr.fer.tel.rovkp.homework02.task01;
 
+import java.text.ParseException;
+
 /**
  *
  * @author aelek
@@ -14,9 +16,11 @@ public class DebsRecordParser {
     private String medallion;
     private int tripTimeInSecs;
 
-    public void parse(String record) throws Exception {
+    public void parse(String record) throws ParseException {
         String[] splitted = record.split(",");
-        if (splitted.length < 9) throw new Exception("Unable to parse record: " + record);
+        if (splitted.length < 9) {
+            throw new ParseException("Unable to parse record: " + record, record.length());
+        }
              
         medallion = splitted[0];
         tripTimeInSecs = Integer.parseInt(splitted[8]);
