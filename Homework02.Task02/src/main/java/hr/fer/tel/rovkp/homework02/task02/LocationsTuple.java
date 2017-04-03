@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hr.fer.tel.rovkp.homework02.task02.homework02.task02;
+package hr.fer.tel.rovkp.homework02.task02;
 
 /**
  *
  * @author aelek
  */
-public class Program {
+public class LocationsTuple {
     
 }
