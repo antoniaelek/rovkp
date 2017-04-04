@@ -11,6 +11,7 @@ import hr.fer.tel.rovkp.homework02.task01.TripTimesTuple;
 import hr.fer.tel.rovkp.homework02.task02.LocationsMapper;
 import hr.fer.tel.rovkp.homework02.task02.LocationsPartitioner;
 import hr.fer.tel.rovkp.homework02.task02.LocationsReducer;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -18,6 +19,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
  *
@@ -36,7 +39,7 @@ public class Program {
         Job job = Job.getInstance();
         job.setJarByClass(Program.class);
         job.setJobName("Locations");
-        job.getConfiguration().set("mapred.textoutputformat.separatorText", ",");
+        // job.getConfiguration().set("mapred.textoutputformat.separatorText", ",");
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(INTERMEDIATE_PATH));
@@ -53,24 +56,33 @@ public class Program {
         
         int code = job.waitForCompletion(true) ? 0 : 1;
         
-        if (code == 0) {
-            Job bJob = Job.getInstance();
-            bJob.setJarByClass(Program.class);
-            bJob.setJobName("TripTimes");
+        System.out.println("First job return code: " + code);
+        
+        if (code != 0) 
+            FileSystem.get(job.getConfiguration()).delete(new Path(INTERMEDIATE_PATH), true);
+        else {
+            Job nextJob = Job.getInstance();
+            nextJob.setJarByClass(Program.class);
+            nextJob.setJobName("TripTimes");
 
-            FileInputFormat.addInputPath(bJob, new Path(INTERMEDIATE_PATH));
-            FileOutputFormat.setOutputPath(bJob, new Path(args[1]));
+            FileInputFormat.addInputPath(nextJob, new Path(INTERMEDIATE_PATH));
+            FileOutputFormat.setOutputPath(nextJob, new Path(args[1]));
 
-            bJob.setMapperClass(TripTimesMapper.class);
-            bJob.setCombinerClass(TripTimesReducer.class);
-            bJob.setReducerClass(TripTimesReducer.class);
+            nextJob.setMapperClass(TripTimesMapper.class);
+            // nextJob.setCombinerClass(TripTimesReducer.class);
+            nextJob.setReducerClass(TripTimesReducer.class);
+
+            job.setOutputKeyClass(Text.class);
+            job.setOutputValueClass(TripTimesTuple.class);
+
+            //configure the multiple outputs
+            MultipleOutputs.addNamedOutput(nextJob, "bins", TextOutputFormat.class, Text.class, TripTimesTuple.class);
             
-            bJob.setOutputKeyClass(Text.class);
-            bJob.setOutputValueClass(TripTimesTuple.class);
+            nextJob.waitForCompletion(true);
 
-            bJob.waitForCompletion(true);
-
-            bJob.waitForCompletion(true);
+            nextJob.waitForCompletion(true);
+            
+            FileSystem.get(job.getConfiguration()).delete(new Path(INTERMEDIATE_PATH), true);
         }
     }
 }

@@ -41,5 +41,10 @@
             <version>2.2.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Homework02.Task01</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
