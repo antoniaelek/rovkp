@@ -27,7 +27,7 @@ public class Program {
         Job job = Job.getInstance();
         job.setJarByClass(Program.class);
         job.setJobName("Locations");
-
+        
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 

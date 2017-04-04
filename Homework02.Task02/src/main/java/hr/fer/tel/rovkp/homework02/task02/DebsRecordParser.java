@@ -53,8 +53,7 @@ public class DebsRecordParser {
         else if (passengerCount == 2 || passengerCount == 3)
             passengerCategory = 2;
         else {
-            int index = record.substring(0,record.indexOf("," + passengerCount + ",")).length();
-            throw new ParseException("Unable to parse record: " + record + ", invalid passenger_count: " + passengerCount, index);
+            throw new ParseException("Unable to parse record: " + record + ", invalid passenger_count: " + passengerCount, -1);
         }
     }
     

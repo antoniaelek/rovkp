@@ -12,14 +12,12 @@ import hr.fer.tel.rovkp.homework02.task02.LocationsMapper;
 import hr.fer.tel.rovkp.homework02.task02.LocationsPartitioner;
 import hr.fer.tel.rovkp.homework02.task02.LocationsReducer;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
  *
@@ -38,6 +36,7 @@ public class Program {
         Job job = Job.getInstance();
         job.setJarByClass(Program.class);
         job.setJobName("Locations");
+        job.getConfiguration().set("mapred.textoutputformat.separatorText", ",");
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(INTERMEDIATE_PATH));
@@ -47,14 +46,16 @@ public class Program {
         job.setReducerClass(LocationsReducer.class);
         job.setNumReduceTasks(6);
 
-        job.setOutputKeyClass(IntWritable.class);
+        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputValueClass(Text.class);
+        job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
         
         int code = job.waitForCompletion(true) ? 0 : 1;
         
         if (code == 0) {
             Job bJob = Job.getInstance();
-            bJob.setJarByClass(SequentialDriver.class);
+            bJob.setJarByClass(Program.class);
             bJob.setJobName("TripTimes");
 
             FileInputFormat.addInputPath(bJob, new Path(INTERMEDIATE_PATH));
@@ -63,13 +64,13 @@ public class Program {
             bJob.setMapperClass(TripTimesMapper.class);
             bJob.setCombinerClass(TripTimesReducer.class);
             bJob.setReducerClass(TripTimesReducer.class);
-
+            
             bJob.setOutputKeyClass(Text.class);
             bJob.setOutputValueClass(TripTimesTuple.class);
 
             bJob.waitForCompletion(true);
 
-            code = bJob.waitForCompletion(true) ? 0 : 1;
+            bJob.waitForCompletion(true);
         }
     }
 }
