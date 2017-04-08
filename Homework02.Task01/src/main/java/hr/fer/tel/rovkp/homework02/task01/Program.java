@@ -36,11 +36,13 @@ public class Program {
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.setMapperClass(TripTimesMapper.class);
-        job.setCombinerClass(TripTimesReducer.class);
+        // job.setCombinerClass(TripTimesReducer.class);
         job.setReducerClass(TripTimesReducer.class);
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(TripTimesTuple.class);
+
+        job.setNumReduceTasks(1);
         
         job.waitForCompletion(true);
         timer.stop();

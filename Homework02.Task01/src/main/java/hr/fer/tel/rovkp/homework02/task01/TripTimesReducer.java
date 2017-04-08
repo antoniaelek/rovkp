@@ -17,9 +17,14 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class TripTimesReducer extends Reducer<Text, TripTimesTuple, Text, TripTimesTuple> {
     
     private TripTimesTuple result = new TripTimesTuple();
-        
+    private TripTimesTuple maxResult = new TripTimesTuple(0,0,0); 
+    private String maxResultMedallion = "";
+    private int cabsCount = 0;
+    
     @Override
     protected void reduce(Text key, Iterable<TripTimesTuple> values, Context context) throws IOException, InterruptedException {
+        cabsCount += 1;
+        
         Iterator<TripTimesTuple> iterator = values.iterator();
         if (!iterator.hasNext()) return;
         
@@ -36,7 +41,18 @@ public class TripTimesReducer extends Reducer<Text, TripTimesTuple, Text, TripTi
             max = curr.getMax() > max ? curr.getMax() : max;
         }
         result.set(total,min,max);
+        if (total > maxResult.getTotal()) {
+            maxResult = result;
+            maxResultMedallion = key.toString();
+        }
         context.write(key, result);
     }
+
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+        context.write(new Text("Longest total drive " + maxResultMedallion), maxResult);
+        context.write(new Text("Cabs count"), new TripTimesTuple(cabsCount,0,0));
+    }
     
+        
 }
