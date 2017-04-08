@@ -18,6 +18,7 @@ import org.apache.hadoop.mapreduce.Mapper;
  */
 public class LocationsMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
 
+    
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String record = value.toString();
@@ -32,7 +33,7 @@ public class LocationsMapper extends Mapper<LongWritable, Text, IntWritable, Tex
         } catch (ParseException ex) {
             System.err.println(ex);
         }
-        
     }
+
     
 }

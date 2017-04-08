@@ -6,11 +6,15 @@
 package hr.fer.tel.rovkp.homework02.task02;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
  *
@@ -39,6 +43,7 @@ public class Program {
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(Text.class);
         
+        MultipleOutputs.addNamedOutput(job, "bins", TextOutputFormat.class, NullWritable.class, Text.class);
         job.waitForCompletion(true);
     }
 }

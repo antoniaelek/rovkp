@@ -50,8 +50,8 @@ public class TripTimesReducer extends Reducer<Text, TripTimesTuple, Text, TripTi
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
-        context.write(new Text("Longest total drive " + maxResultMedallion), maxResult);
-        context.write(new Text("Cabs count"), new TripTimesTuple(cabsCount,0,0));
+        // context.write(new Text("Longest total drive " + maxResultMedallion), maxResult);
+        // context.write(new Text("Cabs count"), new TripTimesTuple(cabsCount,0,0));
     }
     
         

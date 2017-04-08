@@ -42,7 +42,7 @@ public class Program {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(TripTimesTuple.class);
 
-        job.setNumReduceTasks(1);
+        // job.setNumReduceTasks(1);
         
         job.waitForCompletion(true);
         timer.stop();
