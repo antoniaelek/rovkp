@@ -30,12 +30,6 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 public class Program {
     
     private static final String INTERMEDIATE_PATH = "intermediate";
-    private static final String INTERMEDIATE_PATH_1 = "intermediate/center1";
-    private static final String INTERMEDIATE_PATH_2 = "intermediate/not_center1";
-    private static final String INTERMEDIATE_PATH_3 = "intermediate/center2";
-    private static final String INTERMEDIATE_PATH_4 = "intermediate/not_center2";
-    private static final String INTERMEDIATE_PATH_5 = "intermediate/center4";
-    private static final String INTERMEDIATE_PATH_6 = "intermediate/not_center4";
     
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
@@ -46,7 +40,6 @@ public class Program {
         Job firstJob = Job.getInstance();
         firstJob.setJarByClass(Program.class);
         firstJob.setJobName("Locations");
-        // job.getConfiguration().set("mapred.textoutputformat.separatorText", ",");
 
         FileInputFormat.addInputPath(firstJob, new Path(args[0]));
         FileOutputFormat.setOutputPath(firstJob, new Path(INTERMEDIATE_PATH));
@@ -65,24 +58,33 @@ public class Program {
         
         System.out.println("First job return code: " + code);
         
-        if (code != 0) 
-            FileSystem.get(firstJob.getConfiguration()).delete(new Path(INTERMEDIATE_PATH), true);
-        else {
+        if (code == 0) {
             
-            Job job1 = run(INTERMEDIATE_PATH_1,args[1] + "/1");
-            Job job2 = run(INTERMEDIATE_PATH_2,args[1] + "/2");
-            Job job3 = run(INTERMEDIATE_PATH_3,args[1] + "/3");
-            Job job4 = run(INTERMEDIATE_PATH_4,args[1] + "/4");
-            Job job5 = run(INTERMEDIATE_PATH_5,args[1] + "/5");
-            Job job6 = run(INTERMEDIATE_PATH_6,args[1] + "/6");
+            Job job1 = run(INTERMEDIATE_PATH + "center1", 
+                           args[1] + "/1");
+            Job job2 = run(INTERMEDIATE_PATH + "not_center1", 
+                           args[1] + "/2");
+            Job job3 = run(INTERMEDIATE_PATH + "center2", 
+                           args[1] + "/3");
+            Job job4 = run(INTERMEDIATE_PATH + "not_center2", 
+                           args[1] + "/4");
+            Job job5 = run(INTERMEDIATE_PATH + "center4", 
+                           args[1] + "/5");
+            Job job6 = run(INTERMEDIATE_PATH + "not_center4", 
+                           args[1] + "/6");
 
-            while (!(job1.isComplete() && job2.isComplete() && job3.isComplete() && job4.isComplete() && job5.isComplete() && job6.isComplete())){
-                Thread.sleep(5000);
+            while (!(job1.isComplete() && job2.isComplete() && 
+                     job3.isComplete() && job4.isComplete() && 
+                     job5.isComplete() && job6.isComplete())){
+                Thread.sleep(2000);
             }
         }
+        FileSystem.get(firstJob.getConfiguration())
+                .delete(new Path(INTERMEDIATE_PATH), true);
     }
     
-    private static Job run(String pathIn, String pathOut) throws IOException, InterruptedException, ClassNotFoundException{
+    private static Job run(String pathIn, String pathOut) 
+            throws IOException, InterruptedException, ClassNotFoundException{
         Job nextJob = Job.getInstance();
         nextJob.setJarByClass(Program.class);
         nextJob.setJobName("TripTimes");

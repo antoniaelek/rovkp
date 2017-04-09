@@ -34,6 +34,4 @@ public class LocationsMapper extends Mapper<LongWritable, Text, IntWritable, Tex
             System.err.println(ex);
         }
     }
-
-    
 }
