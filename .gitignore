@@ -17,7 +17,9 @@ nb-configuration.xml
 # Custom
 **/gutenberg/**
 **/Distance/**
-**/trip_data.csv
+*.csv
+*.docx
+*.pdf
 
 # Maven
 target/
