@@ -1,9 +1,8 @@
 package hr.fer.tel.rovkp.lab02;
 
-import com.google.common.base.Stopwatch;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -15,32 +14,38 @@ import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class Program {
-    public static void main(String[] args) throws Exception {
-        Stopwatch timer = new Stopwatch();
-        timer.start();
-        
+    public static void main(String[] args) throws Exception {        
         if (args.length != 3) {
-            timer.stop();
-            System.err.println("Usage: <jar> [filter|hourly-export] <input path> <output path>");
+            System.err.println("Usage: <jar> [filter|hourly-export|sequential] <input path> <output path>");
             return;
         }
         
         switch(args[0].toLowerCase()){
             case "filter":
-                Filter(args[1], args[2]);
+                filter(args[1], args[2], false);
                 break;
             case "hourly-export":
-                HourlyExport(args[1], args[2]);
+                hourlyExport(args[1], args[2], false);
+                break;
+            case "sequential":
+                sequential(args[1], args[2]);
                 break;
             default:
                 System.err.println("Usage: <jar> [filter|hourly-export] <input path> <output path>");
+                break;
         }
-        
-        timer.stop();
-        System.out.println("Total time: " + timer.elapsedTime(TimeUnit.SECONDS) + "s");
     }
     
-    public static void Filter(String in, String out) throws IOException, InterruptedException, ClassNotFoundException{
+    public static void sequential(String in, String out) throws IOException, InterruptedException, ClassNotFoundException{
+        int code = filter(in, out, true);
+        System.out.println("First job return code: " + code);
+        if (code == 0) {
+            code = hourlyExport(in, out, true);
+            System.out.println("Second job return code: " + code);
+        }
+    }
+    
+    public static int filter(String in, String out, boolean concise) throws IOException, InterruptedException, ClassNotFoundException{
         Job job = Job.getInstance();
         job.setJarByClass(Program.class);
         job.setJobName("Filter");
@@ -48,16 +53,20 @@ public class Program {
         FileInputFormat.addInputPath(job, new Path(in));
         FileOutputFormat.setOutputPath(job, new Path(out));
 
-        job.setMapperClass(FilterMapper.class);
+        if (concise) job.setMapperClass(FilterMapperConcise.class);
+        else job.setMapperClass(FilterMapper.class);
         job.setNumReduceTasks(0);
 
         job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
         
-        job.waitForCompletion(true);
+        int code = job.waitForCompletion(true) ? 0 : 1;
+        if (code != 0 && concise)
+            FileSystem.get(job.getConfiguration()).delete(new Path(out), true);
+        return code;
     }
     
-    public static void HourlyExport(String in, String out) throws IOException, InterruptedException, ClassNotFoundException{
+    public static int hourlyExport(String in, String out, boolean concise) throws IOException, InterruptedException, ClassNotFoundException{
         Configuration conf = new Configuration();
         conf.set("mapred.textoutputformat.separator", ",");
         Job job = Job.getInstance(conf, "HourlyExport");
@@ -67,9 +76,15 @@ public class Program {
         FileInputFormat.addInputPath(job, new Path(in));
         FileOutputFormat.setOutputPath(job, new Path(out));
 
-        job.setMapperClass(HourlyExportMapper.class);
+        if (concise) {
+            job.setMapperClass(HourlyExportMapperConcise.class);
+            job.setReducerClass(HourlyExportReducerConcise.class);
+        }
+        else {
+            job.setMapperClass(HourlyExportMapper.class);
+            job.setReducerClass(HourlyExportReducer.class);
+        }
         job.setPartitionerClass(HourlyExportPartitioner.class);
-        job.setReducerClass(HourlyExportReducer.class);
         job.setNumReduceTasks(24);
         
         job.setMapOutputKeyClass(IntWritable.class);
@@ -80,6 +95,7 @@ public class Program {
         
         MultipleOutputs.addNamedOutput(job, "bins", TextOutputFormat.class, NullWritable.class, Text.class);
         
-        job.waitForCompletion(true);
+        int code = job.waitForCompletion(true) ? 0 : 1;
+        return code;
     }
 }
