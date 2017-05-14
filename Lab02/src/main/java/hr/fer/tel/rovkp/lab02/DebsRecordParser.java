@@ -22,14 +22,13 @@ public class DebsRecordParser {
     private double pickupLatitude;
     private double dropoffLongitude;
     private double dropoffLatitude;
-    
+        
+    private int hour;
     private double profit;
 
     public double getProfit() {
         return profit;
     }
-    
-    private int hour;
 
     public int getHour() {
         return hour;

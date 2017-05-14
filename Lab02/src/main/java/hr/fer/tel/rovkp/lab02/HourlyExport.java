@@ -11,18 +11,16 @@ import org.apache.hadoop.io.Writable;
 public class HourlyExport implements Writable {
     
     private final Text cell;
+    private final DoubleWritable profit;
+    private IntWritable drives;
 
     public Text getCell() {
         return cell;
     }
 
-    private final DoubleWritable profit;
-
     public DoubleWritable getProfit() {
         return profit;
     }
-
-    private IntWritable drives;
 
     public IntWritable getDrives() {
         return drives;

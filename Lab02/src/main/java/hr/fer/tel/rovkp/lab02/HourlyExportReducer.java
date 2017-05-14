@@ -46,24 +46,32 @@ public class HourlyExportReducer
                 profits.put(cell, profit);
         }
         
-        SimpleEntry<String, Integer> maxDrive = new SimpleEntry<>("", 0);
-        SimpleEntry<String, Double> maxProfit = new SimpleEntry<>("", 0d);
-        
-        for (String s : drives.keySet()){
-            int curr = drives.get(s);
-            maxDrive = curr > maxDrive.getValue() ? new SimpleEntry<>(s,curr) : maxDrive; 
-        }
-        
-        for (String s : profits.keySet()){
-            double curr = profits.get(s);
-            maxProfit = curr > maxProfit.getValue() ? new SimpleEntry<>(s,curr) : maxProfit; 
-        }
+        SimpleEntry<String, Integer> maxDrive = getMaxDrive(drives);
+        SimpleEntry<String, Double> maxProfit = getMaxProfit(profits);
         
         String outvalue = key.toString() + System.lineSeparator() +
                 "drives: [" + maxDrive.getKey() + "] " + maxDrive.getValue() 
                 + System.lineSeparator() +
                 "profit: [" + maxProfit.getKey() + "] " + maxProfit.getValue();
         mos.write("bins", NullWritable.get(), outvalue, key.toString());
+    }
+
+    private SimpleEntry<String, Integer> getMaxDrive(HashMap<String, Integer> drives) {
+        SimpleEntry<String, Integer> maxDrive = new SimpleEntry<>("", 0);
+        for (String s : drives.keySet()){
+            int curr = drives.get(s);
+            maxDrive = curr > maxDrive.getValue() ? new SimpleEntry<>(s,curr) : maxDrive;
+        }
+        return maxDrive;
+    }
+
+    private SimpleEntry<String, Double> getMaxProfit(HashMap<String, Double> profits) {
+        SimpleEntry<String, Double> maxProfit = new SimpleEntry<>("", 0d);
+        for (String s : profits.keySet()){
+            double curr = profits.get(s);
+            maxProfit = curr > maxProfit.getValue() ? new SimpleEntry<>(s,curr) : maxProfit;
+        }
+        return maxProfit;
     }
     
     @Override
