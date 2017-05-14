@@ -169,7 +169,6 @@ public class JokesCollection {
         }
         
         for (int i = 0; i < similarityMatrix.length; i ++) {
-            float max = similarityMatrix[i][i];
             for (int j = 0; j <= i; j++) {
                 float avg = (similarityMatrix[i][j] + similarityMatrix[j][i])/2;
                 similarityMatrix[i][j] = avg;

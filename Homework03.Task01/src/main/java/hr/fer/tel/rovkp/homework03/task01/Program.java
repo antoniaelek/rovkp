@@ -25,10 +25,7 @@ public class Program {
             
             float[][] similarityMatrix = JokesCollection.createSimilarityMatrix(jokes);
             
-            // JokesCollection.similarityMatrixAsCsv(similarityMatrix,outFile);
-            
-            System.out.println(jokes.get(1));
-            System.out.println(jokes.get(87));
+            JokesCollection.similarityMatrixAsCsv(similarityMatrix,outFile);
             
         } catch (IOException ex) {
             Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);
