@@ -18,10 +18,18 @@ import org.apache.lucene.queryparser.classic.ParseException;
 public class Program {
     public static void main(String[] args) throws ParseException {
         try {
-            String path = "/home/aelek/Documents/Projects/rovkp/Homework03.Task01/src/main/resources/jester_items.dat";
-            Map<Integer, String> map = TextCollection.parseInputFile(path);
-            float[][] similarityMatrix = TextCollection.createSimilarityMatrix(map);
-            TextCollection.printSimilarityMatrixAsCsv(similarityMatrix);
+            String path = "./src/main/resources/jester_items.dat";
+            String outFile = "item_similarity.csv";
+            
+            Map<Integer, String> jokes = JokesCollection.parseInputFile(path);
+            
+            float[][] similarityMatrix = JokesCollection.createSimilarityMatrix(jokes);
+            
+            // JokesCollection.similarityMatrixAsCsv(similarityMatrix,outFile);
+            
+            System.out.println(jokes.get(1));
+            System.out.println(jokes.get(87));
+            
         } catch (IOException ex) {
             Logger.getLogger(Program.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -5,7 +5,9 @@
  */
 package hr.fer.tel.rovkp.homework03.task01;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,9 +41,10 @@ import org.apache.lucene.store.RAMDirectory;
  *
  * @author aelek
  */
-public class TextCollection {
+public class JokesCollection {
    
-    public static Map<Integer, String> parseInputFile(String file) throws IOException {
+    public static Map<Integer, String> parseInputFile(String file) 
+            throws IOException {
         Path filePath = Paths.get(file);        
         Map<Integer, String> results = new HashMap<>();
         
@@ -56,7 +59,7 @@ public class TextCollection {
                 if (line.isEmpty() && !currentJoke.isEmpty()) {
                     int currentId = ids.getLast();
                     String jokeText = StringUtils.join(currentJoke, "\n");
-                    jokeText = StringEscapeUtils.unescapeXml(jokeText .toLowerCase().replaceAll("\\<.*?\\>", ""));
+                    jokeText = StringEscapeUtils.unescapeXml(jokeText.toLowerCase().replaceAll("\\<.*?\\>", ""));
                     if (results.putIfAbsent(currentId, jokeText) != null)
                         System.err.println("Joke with id " + currentId + "already exists. Not overwriting.");                    
                 } else if (line.matches("^[0-9]+:$")){
@@ -70,7 +73,11 @@ public class TextCollection {
         
         return results;
     }
-
+        
+    /**
+     * Prints similarity matrix.
+     * @param similarityMatrix matrix to print.
+     */
     public static void printSimilarityMatrix(float[][] similarityMatrix) {
         for (int i = 0; i < similarityMatrix.length; i ++) {
             for (int j = 0; j < similarityMatrix[i].length; j++) {
@@ -80,33 +87,63 @@ public class TextCollection {
         }
     }
     
-    public static void printSimilarityMatrixAsCsv(float[][] similarityMatrix) {
-        for (int i = 0; i < similarityMatrix.length; i ++) {
-            for (int j = 0; j <= i; j++) {
-                if (similarityMatrix[i][j] != 0)
-                    System.out.println((i+1) + ", " + (j+1) + ", " + similarityMatrix[i][j]);
+    /**
+     * Outputs similarity matrix to CSV file
+     * in format ID1, ID2, similarity
+     * @param similarityMatrix matrix to print
+     * @param file CSV file to create
+     * @throws FileNotFoundException 
+     */
+    public static void similarityMatrixAsCsv(float[][] similarityMatrix, String file)
+            throws FileNotFoundException {
+        try( PrintWriter out = new PrintWriter(file)  ){
+            for (int i = 0; i < similarityMatrix.length; i ++) {
+                for (int j = 0; j <= i; j++) {
+                    if (similarityMatrix[i][j] != 0 && ((i == 0) || (j == 0)))
+                        out.println((j+1) + ", " 
+                                  + (i+1) + ", " + similarityMatrix[i][j]);
+                }
             }
         }
     }
-        
-    public static float[][] createSimilarityMatrix(Map<Integer, String> entries) throws IOException, ParseException{
-        int hitsNo = entries.size();
-        float[][] similarityMatrix = new float[hitsNo][hitsNo];
-        
+    
+    /**
+     * Creates similarity matrix from the input map.
+     * @param entries input map.
+     * @return similarity matrix.
+     * @throws IOException
+     * @throws ParseException 
+     */
+    public static float[][] createSimilarityMatrix(Map<Integer, String> entries)
+            throws IOException, ParseException{        
         StandardAnalyzer analyzer = new StandardAnalyzer();
         Directory index = new RAMDirectory();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         
         // create Lucene docs from map entries
         try (
-                IndexWriter indexWriter = new IndexWriter(index, config)) {
+            IndexWriter indexWriter = new IndexWriter(index, config)) {
             for(Entry<Integer,String> entry : entries.entrySet()) {
                 addDocument(indexWriter, entry);
             }
         }
         
-        int i = 0;
-        // create similarity matrix 
+        // create similarity matrix
+        float[][] similarityMatrix = createMatrix(entries, analyzer, index);
+        
+        // normalize matrix
+        similarityMatrix = normalizeMatrix(similarityMatrix);
+        
+        return similarityMatrix;
+    }
+
+    private static float[][] createMatrix(Map<Integer, String> entries, 
+            StandardAnalyzer analyzer, Directory index) 
+            throws NumberFormatException, IOException, ParseException {
+        int hitsNo = entries.size();
+        float[][] similarityMatrix = new float[hitsNo][hitsNo];
+        
+        int i = 0; 
         for(Entry<Integer, String> entry : entries.entrySet()) {
             Query query = new QueryParser("text", analyzer).parse(QueryParser.escape(entry.getValue()));
             IndexReader reader = DirectoryReader.open(index);
@@ -120,9 +157,6 @@ public class TextCollection {
             }
             i++;
         }
-        
-        // normalize matrix
-        similarityMatrix = normalizeMatrix(similarityMatrix);
         return similarityMatrix;
     }
     
