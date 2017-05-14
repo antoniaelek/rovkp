@@ -15,17 +15,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
-import jdk.nashorn.internal.parser.Token;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
-import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
@@ -64,16 +70,79 @@ public class TextCollection {
         
         return results;
     }
-  
-    public static void createLuceneDocs(Map<Integer, String> entries) throws IOException{
+
+    public static void printSimilarityMatrix(float[][] similarityMatrix) {
+        for (int i = 0; i < similarityMatrix.length; i ++) {
+            for (int j = 0; j < similarityMatrix[i].length; j++) {
+                System.out.printf("%10f ", similarityMatrix[i][j]);
+            }
+            System.out.println("");
+        }
+    }
+    
+    public static void printSimilarityMatrixAsCsv(float[][] similarityMatrix) {
+        for (int i = 0; i < similarityMatrix.length; i ++) {
+            for (int j = 0; j <= i; j++) {
+                if (similarityMatrix[i][j] != 0)
+                    System.out.println((i+1) + ", " + (j+1) + ", " + similarityMatrix[i][j]);
+            }
+        }
+    }
+        
+    public static float[][] createSimilarityMatrix(Map<Integer, String> entries) throws IOException, ParseException{
+        int hitsNo = entries.size();
+        float[][] similarityMatrix = new float[hitsNo][hitsNo];
+        
         StandardAnalyzer analyzer = new StandardAnalyzer();
         Directory index = new RAMDirectory();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
-        IndexWriter indexWriter = new IndexWriter(index, config);
-        for(Entry<Integer,String> entry : entries.entrySet()) {
-            addDocument(indexWriter, entry);
+        
+        // create Lucene docs from map entries
+        try (
+                IndexWriter indexWriter = new IndexWriter(index, config)) {
+            for(Entry<Integer,String> entry : entries.entrySet()) {
+                addDocument(indexWriter, entry);
+            }
         }
-        indexWriter.close();
+        
+        int i = 0;
+        // create similarity matrix 
+        for(Entry<Integer, String> entry : entries.entrySet()) {
+            Query query = new QueryParser("text", analyzer).parse(QueryParser.escape(entry.getValue()));
+            IndexReader reader = DirectoryReader.open(index);
+            IndexSearcher searcher = new IndexSearcher(reader);
+            TopDocs docs = searcher.search(query, hitsNo);
+            for(ScoreDoc hit : docs.scoreDocs) {
+                Document document = reader.document(hit.doc);
+                int docId = Integer.parseInt(document.get("ID"));
+                int docIndex = docId - 1;
+                similarityMatrix[i][docIndex] = hit.score;
+            }
+            i++;
+        }
+        
+        // normalize matrix
+        similarityMatrix = normalizeMatrix(similarityMatrix);
+        return similarityMatrix;
+    }
+    
+    private static float[][] normalizeMatrix(float[][] similarityMatrix){
+        for (int i = 0; i < similarityMatrix.length; i ++) {
+            float max = similarityMatrix[i][i];
+            for (int j = 0; j < similarityMatrix[i].length; j++) {
+                similarityMatrix[i][j] /= max;
+            }
+        }
+        
+        for (int i = 0; i < similarityMatrix.length; i ++) {
+            float max = similarityMatrix[i][i];
+            for (int j = 0; j <= i; j++) {
+                float avg = (similarityMatrix[i][j] + similarityMatrix[j][i])/2;
+                similarityMatrix[i][j] = avg;
+                similarityMatrix[j][i] = avg;
+            }
+        }
+        return similarityMatrix;
     }
     
     private static void addDocument(IndexWriter w, Entry<Integer, String> entry) throws IOException {
