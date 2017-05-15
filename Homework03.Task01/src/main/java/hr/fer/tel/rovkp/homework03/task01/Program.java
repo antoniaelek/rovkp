@@ -19,7 +19,7 @@ public class Program {
     public static void main(String[] args) throws ParseException {
         try {
             String path = "./src/main/resources/jester_items.dat";
-            String outFile = "item_similarity.csv";
+            String outFile = "./target/item_similarity.csv";
             
             Map<Integer, String> jokes = JokesCollection.parseInputFile(path);
             

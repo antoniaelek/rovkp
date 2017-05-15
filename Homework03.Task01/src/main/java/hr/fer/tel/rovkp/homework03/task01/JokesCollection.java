@@ -79,9 +79,9 @@ public class JokesCollection {
      * @param similarityMatrix matrix to print.
      */
     public static void printSimilarityMatrix(float[][] similarityMatrix) {
-        for (int i = 0; i < similarityMatrix.length; i ++) {
-            for (int j = 0; j < similarityMatrix[i].length; j++) {
-                System.out.printf("%10f ", similarityMatrix[i][j]);
+        for (float[] similarityMatrix1 : similarityMatrix) {
+            for (int j = 0; j < similarityMatrix1.length; j++) {
+                System.out.printf("%10f ", similarityMatrix1[j]);
             }
             System.out.println("");
         }
