@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,9 +100,12 @@ public class JokesCollection {
         try( PrintWriter out = new PrintWriter(file)  ){
             for (int i = 0; i < similarityMatrix.length; i ++) {
                 for (int j = 0; j <= i; j++) {
-                    if (similarityMatrix[i][j] != 0 && ((i == 0) || (j == 0)))
+                    if (similarityMatrix[i][j] != 0) {
+                        DecimalFormat format = new DecimalFormat("###.####");
                         out.println((j+1) + ", " 
-                                  + (i+1) + ", " + similarityMatrix[i][j]);
+                                  + (i+1) + ", "
+                                  + format.format(similarityMatrix[i][j]));
+                    }
                 }
             }
         }

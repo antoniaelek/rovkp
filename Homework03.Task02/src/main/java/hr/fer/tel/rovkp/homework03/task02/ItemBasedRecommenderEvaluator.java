@@ -27,8 +27,8 @@ public class ItemBasedRecommenderEvaluator {
         
         DataModel model = new FileDataModel(new File(fileDataModel));
         
-        RecommenderBuilder builder = (DataModel model1) -> 
-                RecommenderUtils.userBasedRecommender(model1);
+        RecommenderBuilder builder = (DataModel m) -> 
+                RecommenderUtils.itemBasedRecommender(m, fileItemsSimilarity);
         
         //evaluiraj procjenu 
         RecommenderEvaluator recEvaluator = new RMSRecommenderEvaluator();

@@ -6,11 +6,11 @@
 package hr.fer.tel.rovkp.homework03.task02;
 
 import java.io.File;
+import java.util.List;
 import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
 import org.apache.mahout.cf.taste.impl.recommender.GenericItemBasedRecommender;
-import org.apache.mahout.cf.taste.impl.similarity.file.FileItemSimilarity;
 import org.apache.mahout.cf.taste.model.DataModel;
-import org.apache.mahout.cf.taste.similarity.ItemSimilarity;
+import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 
 /**
  *
@@ -22,7 +22,12 @@ public class ItemBasedJokesRecommender {
         String fileDataModel = "./src/main/resources/jester_ratings.dat";
         
         DataModel model = new FileDataModel(new File(fileDataModel));
-        ItemSimilarity similarity = new FileItemSimilarity(new File(fileItemsSimilarity));
-        GenericItemBasedRecommender recommender = new GenericItemBasedRecommender(model, similarity);
+        GenericItemBasedRecommender recommender = RecommenderUtils.itemBasedRecommender(model, fileItemsSimilarity);
+        
+        List<RecommendedItem> recommendations = recommender.recommend(220, 10);
+        for (RecommendedItem recommendation : recommendations) {
+            System.out.println(recommendation);
+        }
+
     }
 }

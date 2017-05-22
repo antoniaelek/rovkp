@@ -6,6 +6,7 @@
 package hr.fer.tel.rovkp.homework03.task01;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
  */
 public class Program {
     public static void main(String[] args) throws ParseException {
+        Locale.setDefault(Locale.ENGLISH); 
         try {
             String path = "./src/main/resources/jester_items.dat";
             String outFile = "./target/item_similarity.csv";

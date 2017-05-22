@@ -10,6 +10,7 @@ import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.neighborhood.ThresholdUserNeighborhood;
 import org.apache.mahout.cf.taste.impl.recommender.GenericItemBasedRecommender;
 import org.apache.mahout.cf.taste.impl.recommender.GenericUserBasedRecommender;
+import org.apache.mahout.cf.taste.impl.similarity.LogLikelihoodSimilarity;
 import org.apache.mahout.cf.taste.impl.similarity.PearsonCorrelationSimilarity;
 import org.apache.mahout.cf.taste.impl.similarity.file.FileItemSimilarity;
 import org.apache.mahout.cf.taste.model.DataModel;
@@ -23,8 +24,8 @@ import org.apache.mahout.cf.taste.similarity.UserSimilarity;
  */
 public class RecommenderUtils {
     public static GenericUserBasedRecommender userBasedRecommender(DataModel model) throws TasteException { 
-        UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
-        UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.1, similarity, model);
+        UserSimilarity similarity = new LogLikelihoodSimilarity(model);
+        UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.9, similarity, model);
         return new GenericUserBasedRecommender(model, neighborhood, similarity);
     }
     
