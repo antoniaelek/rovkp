@@ -23,14 +23,13 @@ public class ItemBasedRecommenderEvaluator {
         RandomUtils.useTestSeed();
 
         String fileItemsSimilarity = "./src/main/resources/item_similarity.csv";
-        String fileDataModel = "./src/main/resources/jester_ratings.dat";
+        String fileDataModel = "./src/main/resources/jester_ratings_small.dat";
         
         DataModel model = new FileDataModel(new File(fileDataModel));
         
         RecommenderBuilder builder = (DataModel m) -> 
                 RecommenderUtils.itemBasedRecommender(m, fileItemsSimilarity);
-        
-        //evaluiraj procjenu 
+
         RecommenderEvaluator recEvaluator = new RMSRecommenderEvaluator();
         double score = recEvaluator.evaluate(builder, null, model, 0.7, 1.0);
         System.out.println(score);
