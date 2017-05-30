@@ -5,6 +5,7 @@
 **/nbdist/**
 nbactions.xml
 nb-configuration.xml
+*.txt
 
 # Class Files #
 *.class
