@@ -22,7 +22,7 @@ public class UserBasedRecommenderEvaluator {
 
         RandomUtils.useTestSeed();
 
-        String fileDataModel = "./src/main/resources/jester_ratings_small.dat";
+        String fileDataModel = "./src/main/resources/jester_ratings.dat";
         
         DataModel model = new FileDataModel(new File(fileDataModel));
 

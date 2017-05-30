@@ -3,8 +3,6 @@ package hr.fer.tel.rovkp.lab03;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import org.apache.mahout.cf.taste.common.Refreshable;
 import org.apache.mahout.cf.taste.common.TasteException;
@@ -89,10 +87,10 @@ public class CollaborativeItemSimilarity implements ItemSimilarity {
     @Override
     public double[] itemSimilarities(long itemID1, long[] itemID2s) throws TasteException {
         double[] similarities = new double[itemID2s.length];
-        int idx1 = idSeqMap.get(itemID1);
+        int seqId1 = idSeqMap.get(itemID1);
         for (int i = 0; i < itemID2s.length; i++) {
-            int idxCurr = idSeqMap.get(itemID2s[i]);
-            similarities[i] = matrix[idx1][idxCurr];
+            int seqIdCurr = idSeqMap.get(itemID2s[i]);
+            similarities[i] = matrix[seqId1][seqIdCurr];
         }
         return similarities;
     }
@@ -100,9 +98,9 @@ public class CollaborativeItemSimilarity implements ItemSimilarity {
     @Override
     public long[] allSimilarItemIDs(long itemID) throws TasteException {
         HashSet<Long> ids = new HashSet<>();
-        int idx1 = idSeqMap.get(itemID);
+        int seqId1 = idSeqMap.get(itemID);
         for (int i = 0; i < matrix.length; i++) {
-            if (matrix[idx1][i] > 0 && i != idx1)
+            if (matrix[seqId1][i] > 0 && i != seqId1)
                 ids.add(seqIdMap.get(i));
         }
         long[] idsArray = new long[ids.size()];
