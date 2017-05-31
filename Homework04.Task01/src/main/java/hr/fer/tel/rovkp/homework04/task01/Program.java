@@ -15,17 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- *
- * @author aelek
- */
 public class Program {
-    private static final String pathToFiles = "./src/main/resources/";
-    private static final String ignoreFilename = "sensorscope-monitor-def.txt";
-    private static final String outPath = "./target/senesorscope-monitor-all.csv.";
+    private static final String PATH_TO_FILES = "./src/main/resources/";
+    private static final String IGNORE_FILENAME = "sensorscope-monitor-def.txt";
+    private static final String OUT_PATH = "./target/senesorscope-monitor-all.csv.";
     
     public static void main(String[] args) throws IOException {
-        List<File> files = getFiles(pathToFiles, ignoreFilename);
+        List<File> files = getFiles(PATH_TO_FILES, IGNORE_FILENAME);
         System.out.println(files.size() + " input files.");
         
         // Concatenate streams
@@ -43,7 +39,7 @@ public class Program {
                 .sorted();
         
         // Write to file
-         try(PrintWriter writer = new PrintWriter(new FileWriter(outPath))){
+         try(PrintWriter writer = new PrintWriter(new FileWriter(OUT_PATH))){
              readings.forEach(r -> {
                  writer.println(r.toString());
              });
