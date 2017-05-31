@@ -10,10 +10,11 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <name>Homework04.Task02</name>
     <dependencies>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming_2.11</artifactId>
+            <artifactId>spark-core_2.11</artifactId>
             <version>1.5.0</version>
         </dependency>
     </dependencies>
@@ -27,7 +28,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>hr.fer.tel.rovkp.homework04.task02.Progrm</mainClass>
+                            <mainClass>hr.fer.tel.rovkp.homework04.task02.Driver</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
