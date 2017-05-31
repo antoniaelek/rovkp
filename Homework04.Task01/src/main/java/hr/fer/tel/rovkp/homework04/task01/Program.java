@@ -9,12 +9,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -24,9 +20,9 @@ import java.util.stream.Stream;
  * @author aelek
  */
 public class Program {
-    private static String pathToFiles = "./src/main/resources/";
-    private static String ignoreFilename = "sensorscope-monitor-def.txt";
-    private static String outPath = "./target/senesorscope-monitor-all.csv.";
+    private static final String pathToFiles = "./src/main/resources/";
+    private static final String ignoreFilename = "sensorscope-monitor-def.txt";
+    private static final String outPath = "./target/senesorscope-monitor-all.csv.";
     
     public static void main(String[] args) throws IOException {
         List<File> files = getFiles(pathToFiles, ignoreFilename);

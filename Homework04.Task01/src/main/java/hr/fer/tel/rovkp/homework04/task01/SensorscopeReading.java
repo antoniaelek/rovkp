@@ -6,7 +6,6 @@
 package hr.fer.tel.rovkp.homework04.task01;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 
 /**
  *
@@ -35,7 +34,7 @@ public class SensorscopeReading implements Comparable<SensorscopeReading> {
 
     public boolean Parse(String line) {
         String[] fields = line.split(" ");
-        if (fields.length != 19) return false;
+        if (fields.length < 19) return false;
         
         try {
             this.stationID = Integer.parseInt(fields[0]);
