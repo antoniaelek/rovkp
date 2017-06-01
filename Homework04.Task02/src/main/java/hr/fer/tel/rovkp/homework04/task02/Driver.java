@@ -48,7 +48,7 @@ public class Driver {
         // Koje je najnepopularnije žensko ime kroz čitav period i države?
         JavaPairRDD<Integer, String> out1 = stateNames
                 .filter(n -> n.getGender().toLowerCase().equals("f"))
-                .mapToPair(n -> new Tuple2<>(n.getName(),1))
+                .mapToPair(n -> new Tuple2<>(n.getName(),n.getCount()))
                 .reduceByKey((x,y) -> x + y)
                 .mapToPair(np -> new Tuple2<>(np._2, np._1))
                 .sortByKey(false);
@@ -57,7 +57,7 @@ public class Driver {
        // Kojih 10 muških imena su najpopularnija kroz čitav period i države?
        JavaPairRDD<Integer, String> out2 = stateNames
                 .filter(n -> n.getGender().toLowerCase().equals("m"))
-                .mapToPair(n -> new Tuple2<>(n.getName(),1))
+                .mapToPair(n -> new Tuple2<>(n.getName(),n.getCount()))
                 .reduceByKey((x,y) -> x + y)
                 .mapToPair(np -> new Tuple2<>(np._2, np._1))
                 .sortByKey(false);
@@ -66,7 +66,7 @@ public class Driver {
         // U kojoj državi je 1946. godine rođeno najviše djece oba spola?
         JavaPairRDD<Integer, String> out3 = stateNames
                 .filter(n -> n.getYear() == 1946)
-                .mapToPair(n -> new Tuple2<>(n.getState(),1))
+                .mapToPair(n -> new Tuple2<>(n.getState(),n.getCount()))
                 .reduceByKey((x,y) -> x + y)
                 .mapToPair(np -> np.swap())
                 .sortByKey(false);
@@ -76,7 +76,7 @@ public class Driver {
         // Rezultat je (sortirana) lista tipa Pair2 (ključ je godina, a vrijednost je broj novorođenčadi
         JavaPairRDD<Integer, Integer> out4 = stateNames
                 .filter(n -> n.getGender().toLowerCase().equals("f"))
-                .mapToPair(n -> new Tuple2<>(n.getYear(),1))
+                .mapToPair(n -> new Tuple2<>(n.getYear(),n.getCount()))
                 .reduceByKey((x,y) -> x + y)
                 .sortByKey(false);
         out4.saveAsTextFile(OUT_PATH_4);
@@ -86,7 +86,7 @@ public class Driver {
         // Pri tome iskoristite polje iz prethodnog pitanja.
         JavaPairRDD<Integer, Integer> mary = stateNames
                 .filter(n -> n.getName().equals("Mary"))
-                .mapToPair(n -> new Tuple2<>(n.getYear(),1))
+                .mapToPair(n -> new Tuple2<>(n.getYear(),n.getCount()))
                 .reduceByKey((x,y) -> x + y)
                 .sortByKey(false);
         
