@@ -11,7 +11,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import scala.Tuple2;
 
 public class Driver {
-    private static final String OUT_PATH = "./target/out";
+    private static final String OUT_PATH = "/home/aelek/spark/rovkp/target/out";
 
     public static void main(String[] args) {
 
@@ -26,7 +26,7 @@ public class Driver {
         }
 
         JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(5));
-        jssc.checkpoint("./");
+        jssc.checkpoint("/home/aelek/spark/rovkp/target/checkpoint/");
         
         JavaDStream<String> lines = jssc.socketTextStream("localhost", 10002);
 
@@ -37,8 +37,8 @@ public class Driver {
                 .map(l -> new SensorscopeReading(l))
                 .mapToPair(o -> new Tuple2<>(o.getStationID(), o.getSolarPanelCurrent()))
                 .reduceByKeyAndWindow(
-                        (t1, t2) -> { return Math.max(t1, t2); }, 
-                        (t1, t2) -> { return t2; }, 
+                        (t1, t2) -> { return Math.max(t1, t2); },
+                        (t1, t2) -> { return t1; },
                         new Duration(60000), 
                         new Duration(10000)
                 );             

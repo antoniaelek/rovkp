@@ -25,7 +25,7 @@ public class SensorscopeReading implements Comparable<SensorscopeReading>, Seria
     private double energySource;
 
     public boolean Parse(String line) {
-        String[] fields = line.split(" ");
+        String[] fields = line.split(",");
         if (fields.length < 19) return false;
         
         try {

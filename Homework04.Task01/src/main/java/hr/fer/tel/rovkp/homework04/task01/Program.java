@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class Program {
     private static final String PATH_TO_FILES = "./src/main/resources/";
     private static final String IGNORE_FILENAME = "sensorscope-monitor-def.txt";
-    private static final String OUT_PATH = "./target/senesorscope-monitor-all.csv.";
+    private static final String OUT_PATH = "./target/senesorscope-monitor-all.csv";
     
     public static void main(String[] args) throws IOException {
         List<File> files = getFiles(PATH_TO_FILES, IGNORE_FILENAME);
