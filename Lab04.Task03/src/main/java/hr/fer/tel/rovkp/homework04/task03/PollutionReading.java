@@ -1,9 +1,11 @@
-package hr.fer.tel.rovkp.lab04.task01;
+package hr.fer.tel.rovkp.homework04.task03;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+
 
 public class PollutionReading implements Comparable<PollutionReading>, Serializable {
     private int ozone;
@@ -47,7 +49,7 @@ public class PollutionReading implements Comparable<PollutionReading>, Serializa
         return ozone + "," + particullate_matter + "," + carbon_monoxide 
                 + "," + sulfure_dioxide + "," + nitrogen_dioxide 
                 + "," + longitude + "," + latitude + "," 
-                + new SimpleDateFormat(FORMAT).format(timestamp);
+                + new SimpleDateFormat(FORMAT, Locale.US).format(timestamp);
     }
 
     @Override
